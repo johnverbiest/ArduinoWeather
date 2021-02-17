@@ -1,0 +1,6 @@
+{
+    "programmer": "AVRISP mkII",
+    "board": "arduino:avr:uno",
+    "sketch": "phaseOne\\esp8266\\esp8266.ino",
+    "port": "COM7"
+}
