@@ -29,8 +29,9 @@ void loop() {
 
 // This thread will manage the periodic update of the temperature
 unsigned long nextTemperatureUpdate = 0;       // Set starting point (immediate)
-const int minTempReadDelay = 5000;    // minimum refresh time
+const int minTempReadDelay = 60000;    // minimum refresh time
 int tempReadDelay = 5000;             // sensor refresh time
+float lastTemperature;
 void readTemperatureThread() {
     if (nextTemperatureUpdate < millis())
     {
@@ -40,7 +41,10 @@ void readTemperatureThread() {
         Serial.println(F("Error reading temperature!"));
       }
       else {
-        serialReportTemperature(event.temperature);
+        if (event.temperature != lastTemperature) {
+          serialReportTemperature(event.temperature);
+          lastTemperature = event.temperature;
+        }
       }
       int readDelay = tempReadDelay > minTempReadDelay ? tempReadDelay : minTempReadDelay;
       nextTemperatureUpdate = millis() + readDelay;
