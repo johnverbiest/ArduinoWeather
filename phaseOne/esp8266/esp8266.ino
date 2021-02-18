@@ -6,6 +6,10 @@
 const char* ssid     = SECRET_SSID;
 const char* password = SECRET_PASS;
 
+// Readings Store
+float currentTemperature;
+const char CELCIUS[4] = {' ', 176, 'C', '\0'};
+
 // Create Wifi Server
 WiFiServer server(80);
 
@@ -30,7 +34,27 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  SerialComms();
   WebServer();
+}
+
+void SerialComms() {
+    if (Serial.available()) {
+      char commandBuffer[10] = "";
+      Serial.readBytesUntil(' ', commandBuffer, 9);
+      Serial.print("DEBUG Received '");
+      Serial.print(commandBuffer);
+      Serial.println("'");
+      if (strcmp(commandBuffer, "TEMPINCEL") == 0) {
+        // Receiving Temperature
+        currentTemperature = Serial.parseFloat();
+        Serial.print("DEBUG executing ");
+        Serial.print(commandBuffer);
+        Serial.print(": temperature reading ");
+        Serial.print(currentTemperature);
+        Serial.println(" Celsius stored"); 
+      }
+    }
 }
 
 void WebServer() {
@@ -76,7 +100,8 @@ void ProcessRequest(WiFiClient client, String header) {
   client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
   client.println("<link rel=\"icon\" href=\"data:,\">");
   client.println("</head><body>");
-  client.println("<h1>Hello World!</h1>");
+  client.println("<h1>John's Awesome Weather Station</h1>");
+  client.print("<p>The current temperature is "); client.print(currentTemperature); client.print(CELCIUS); client.println("</p>");
   client.println("</body>");
   client.println();
 }
